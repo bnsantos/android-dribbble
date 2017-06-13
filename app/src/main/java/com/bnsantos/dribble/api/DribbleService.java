@@ -11,7 +11,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public interface DribbleService {
-  @GET("/shots")
+  @GET("shots")
   Observable<List<Shots>> read(
       @NonNull final @Query(value = "page") int page,
       @NonNull final @Query(value = "per_page") int perPage,
