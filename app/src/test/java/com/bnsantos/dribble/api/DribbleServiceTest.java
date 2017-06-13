@@ -6,6 +6,7 @@ import com.bnsantos.dribble.api.deserializers.UserDeserializer;
 import com.bnsantos.dribble.models.Shots;
 import com.bnsantos.dribble.models.User;
 import com.bnsantos.dribble.utils.RecordingObserver;
+import com.bnsantos.dribble.utils.Util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -38,7 +39,6 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.core.IsNull.notNullValue;
 
 @RunWith(JUnit4.class)
 public class DribbleServiceTest {
@@ -74,7 +74,7 @@ public class DribbleServiceTest {
     RecordingObserver<List<Shots>> subscriber = mSubscriberRule.create();
 
     mService.read(1, 10, "views", "token").subscribe(subscriber);
-    List<Shots> data = (List<Shots>) loadFromResource("shots.json", new TypeToken<List<Shots>>() {
+    List<Shots> data = (List<Shots>) Util.loadFromResource(getClass().getClassLoader(), mGson, "shots.json", new TypeToken<List<Shots>>() {
     }.getType());
 
     List<Shots> response = subscriber.takeValue();
@@ -107,14 +107,4 @@ public class DribbleServiceTest {
     }
     mMockWebServer.enqueue(mockResponse.setBody(source.readString(Charset.forName("UTF-8"))));
   }
-
-  private <T> T loadFromResource(String fileName, Type type) throws IOException {
-    InputStream inputStream = getClass().getClassLoader().getResourceAsStream("api-response/" + fileName);
-    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-    JsonReader reader = new JsonReader(inputStreamReader);
-    T data = mGson.fromJson(reader, type);
-    reader.close();
-    return data;
-  }
-
 }

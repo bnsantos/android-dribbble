@@ -7,6 +7,8 @@ import com.bnsantos.dribble.api.DribbleService;
 import com.bnsantos.dribble.api.deserializers.DateDeserializer;
 import com.bnsantos.dribble.api.deserializers.ShotsDeserializer;
 import com.bnsantos.dribble.api.deserializers.UserDeserializer;
+import com.bnsantos.dribble.db.ShotsDao;
+import com.bnsantos.dribble.db.ShotsDaoImpl;
 import com.bnsantos.dribble.models.Shots;
 import com.bnsantos.dribble.models.User;
 import com.google.gson.Gson;
@@ -41,5 +43,10 @@ public class AppModule {
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .build()
         .create(DribbleService.class);
+  }
+
+  @Singleton @Provides
+  ShotsDao shotsDao(){
+    return new ShotsDaoImpl();
   }
 }
