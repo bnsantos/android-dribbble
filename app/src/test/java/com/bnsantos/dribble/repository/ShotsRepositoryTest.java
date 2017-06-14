@@ -13,14 +13,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import org.assertj.core.condition.AnyOf;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.mockito.ArgumentMatcher;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -34,7 +31,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 @RunWith(JUnit4.class)
 public class ShotsRepositoryTest {
-
   @Rule public RecordingObserver.Rule mSubscriberRule = new RecordingObserver.Rule();
   private DribbleService mService;
   private ShotsDao mDao;
