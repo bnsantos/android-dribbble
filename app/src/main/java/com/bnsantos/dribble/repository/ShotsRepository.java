@@ -1,5 +1,7 @@
 package com.bnsantos.dribble.repository;
 
+import android.util.Log;
+
 import com.bnsantos.dribble.BuildConfig;
 import com.bnsantos.dribble.api.DribbleService;
 import com.bnsantos.dribble.db.ShotsDao;
@@ -16,6 +18,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 
 @Singleton public class ShotsRepository {
+  private static final String TAG = ShotsRepository.class.getSimpleName();
   private final DribbleService mService;
   private final ShotsDao mDao;
 
@@ -26,6 +29,7 @@ import io.reactivex.functions.Function;
   }
 
   public Observable<Resource<List<Shots>>> read(final int max){
+    Log.i(TAG, "read-> max=" +max);
     return Observable.mergeDelayError(
         readCached(0, max),
         readServer(0, max, "views")
@@ -33,10 +37,12 @@ import io.reactivex.functions.Function;
   }
 
   private Observable<Resource<List<Shots>>> readCached(final int offset, final int max){
+    Log.i(TAG, "readCached-> offset=" + offset + ", max=" + max);
     return mDao.read(offset, max);
   }
 
   private Observable<Resource<List<Shots>>> readServer(final int page, final int max, @android.support.annotation.NonNull final String sort){
+    Log.i(TAG, "readServer-> page=" + (page+1) + ", max="+max + ", sort="+sort);
     return mService.read(page+1, max, sort, BuildConfig.DRIBBBLE_TOKEN)
         .flatMap(new Function<List<Shots>, Observable<Resource<List<Shots>>>>() {
           @Override
@@ -47,6 +53,7 @@ import io.reactivex.functions.Function;
   }
 
   public Observable<Resource<List<Shots>>> readPage(final int page, final int max){
+    Log.i(TAG, "readPage-> page=" + (page) + ", max="+max );
     return Observable.mergeDelayError(
         readCached(page*max, max),
         readServer(page, max, "views")

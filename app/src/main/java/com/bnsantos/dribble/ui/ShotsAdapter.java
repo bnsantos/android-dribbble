@@ -49,6 +49,7 @@ public class ShotsAdapter extends RecyclerView.Adapter<ShotsAdapter.ShotsHolder>
   public void setItems(@NonNull List<Shots> items){
     mItems = items;
     notifyDataSetChanged();
+    Log.i(TAG, "size1: " + mItems.size());
   }
 
 
@@ -67,6 +68,7 @@ public class ShotsAdapter extends RecyclerView.Adapter<ShotsAdapter.ShotsHolder>
       mItems.addAll(items);
     }
     notifyDataSetChanged();
+    Log.i(TAG, "size2: " + mItems.size());
   }
 
 
@@ -74,6 +76,7 @@ public class ShotsAdapter extends RecyclerView.Adapter<ShotsAdapter.ShotsHolder>
     mLastAppendSize = data.size();
     mItems.addAll(data);
     notifyDataSetChanged();
+    Log.i(TAG, "size3: " + mItems.size());
   }
 
   public Shots getItem(int position) {

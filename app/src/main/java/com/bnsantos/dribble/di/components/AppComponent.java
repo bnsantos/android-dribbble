@@ -2,7 +2,7 @@ package com.bnsantos.dribble.di.components;
 
 import android.app.Application;
 
-import com.bnsantos.dribble.App;
+import com.bnsantos.dribble.app.BaseApp;
 import com.bnsantos.dribble.di.modules.AppModule;
 import com.bnsantos.dribble.di.modules.MainActivityModule;
 import com.bnsantos.dribble.di.modules.ShotActivityModule;
@@ -26,7 +26,8 @@ public interface AppComponent {
   interface Builder {
     @BindsInstance
     Builder application(Application application);
+    Builder setAppModule(AppModule module);
     AppComponent build();
   }
-  void inject(App app);
+  void inject(BaseApp app);
 }
