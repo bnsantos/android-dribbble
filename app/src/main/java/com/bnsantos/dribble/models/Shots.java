@@ -1,5 +1,8 @@
 package com.bnsantos.dribble.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.bnsantos.dribble.db.DB;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
@@ -10,7 +13,7 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 import java.util.Date;
 
 @Table(database = DB.class)
-public class Shots extends BaseModel{
+public class Shots extends BaseModel implements Parcelable {
   @PrimaryKey
   private long id;
 
@@ -234,4 +237,57 @@ public class Shots extends BaseModel{
     result = 31 * result + (creator != null ? creator.hashCode() : 0);
     return result;
   }
+
+
+  @Override
+  public int describeContents() {
+    return 0;
+  }
+
+  @Override
+  public void writeToParcel(Parcel dest, int flags) {
+    dest.writeLong(this.id);
+    dest.writeString(this.title);
+    dest.writeString(this.description);
+    dest.writeInt(this.width);
+    dest.writeInt(this.height);
+    dest.writeString(this.image);
+    dest.writeLong(this.views);
+    dest.writeLong(this.likes);
+    dest.writeLong(this.createdAt != null ? this.createdAt.getTime() : -1);
+    dest.writeLong(this.updatedAt != null ? this.updatedAt.getTime() : -1);
+    dest.writeString(this.url);
+    dest.writeByte(this.animated ? (byte) 1 : (byte) 0);
+    dest.writeParcelable(this.creator, flags);
+  }
+
+  protected Shots(Parcel in) {
+    this.id = in.readLong();
+    this.title = in.readString();
+    this.description = in.readString();
+    this.width = in.readInt();
+    this.height = in.readInt();
+    this.image = in.readString();
+    this.views = in.readLong();
+    this.likes = in.readLong();
+    long tmpCreatedAt = in.readLong();
+    this.createdAt = tmpCreatedAt == -1 ? null : new Date(tmpCreatedAt);
+    long tmpUpdatedAt = in.readLong();
+    this.updatedAt = tmpUpdatedAt == -1 ? null : new Date(tmpUpdatedAt);
+    this.url = in.readString();
+    this.animated = in.readByte() != 0;
+    this.creator = in.readParcelable(User.class.getClassLoader());
+  }
+
+  public static final Parcelable.Creator<Shots> CREATOR = new Parcelable.Creator<Shots>() {
+    @Override
+    public Shots createFromParcel(Parcel source) {
+      return new Shots(source);
+    }
+
+    @Override
+    public Shots[] newArray(int size) {
+      return new Shots[size];
+    }
+  };
 }

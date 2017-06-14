@@ -3,6 +3,7 @@ package com.bnsantos.dribble.db;
 import android.support.annotation.NonNull;
 
 import com.bnsantos.dribble.models.Shots;
+import com.bnsantos.dribble.models.Shots_Table;
 import com.raizlabs.android.dbflow.rx2.language.RXSQLite;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 
@@ -14,10 +15,12 @@ import io.reactivex.ObservableOnSubscribe;
 
 public class ShotsDaoImpl implements ShotsDao {
   @Override
-  public Observable<List<Shots>> read() {
+  public Observable<List<Shots>> read(final int limit) {
     return RXSQLite.rx(
         SQLite.select()
             .from(Shots.class)
+            .orderBy(Shots_Table.views, false)
+            .limit(limit)
     )
     .queryList()
     .toObservable();

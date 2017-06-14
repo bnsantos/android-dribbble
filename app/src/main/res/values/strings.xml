@@ -1,3 +1,5 @@
 <resources>
   <string name="app_name">Dribble</string>
+  <string name="followers_d">Followers %d</string>
+  <string name="likes_d">Likes %d</string>
 </resources>

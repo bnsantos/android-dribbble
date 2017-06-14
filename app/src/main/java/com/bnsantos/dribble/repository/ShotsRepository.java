@@ -24,15 +24,15 @@ import io.reactivex.functions.Function;
     mDao = dao;
   }
 
-  public Observable<List<Shots>> read(){
+  public Observable<List<Shots>> read(final int max){
     return Observable.mergeDelayError(
-        readCached(),
+        readCached(max),
         readServer()
     );
   }
 
-  private Observable<List<Shots>> readCached(){
-    return mDao.read();
+  private Observable<List<Shots>> readCached(final int max){
+    return mDao.read(max);
   }
 
   private Observable<List<Shots>> readServer(){

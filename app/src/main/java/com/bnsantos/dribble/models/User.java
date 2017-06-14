@@ -1,5 +1,8 @@
 package com.bnsantos.dribble.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.bnsantos.dribble.db.DB;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
@@ -9,7 +12,7 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 import java.util.Date;
 
 @Table(database = DB.class)
-public class User extends BaseModel {
+public class User extends BaseModel implements Parcelable {
   @PrimaryKey
   private long id;
 
@@ -217,4 +220,55 @@ public class User extends BaseModel {
     result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
     return result;
   }
+
+
+  @Override
+  public int describeContents() {
+    return 0;
+  }
+
+  @Override
+  public void writeToParcel(Parcel dest, int flags) {
+    dest.writeLong(this.id);
+    dest.writeString(this.name);
+    dest.writeString(this.avatar);
+    dest.writeString(this.bio);
+    dest.writeString(this.location);
+    dest.writeString(this.web);
+    dest.writeString(this.twitter);
+    dest.writeLong(this.followers);
+    dest.writeLong(this.likes);
+    dest.writeByte(this.pro ? (byte) 1 : (byte) 0);
+    dest.writeLong(this.createdAt != null ? this.createdAt.getTime() : -1);
+    dest.writeLong(this.updatedAt != null ? this.updatedAt.getTime() : -1);
+  }
+
+  protected User(Parcel in) {
+    this.id = in.readLong();
+    this.name = in.readString();
+    this.avatar = in.readString();
+    this.bio = in.readString();
+    this.location = in.readString();
+    this.web = in.readString();
+    this.twitter = in.readString();
+    this.followers = in.readLong();
+    this.likes = in.readLong();
+    this.pro = in.readByte() != 0;
+    long tmpCreatedAt = in.readLong();
+    this.createdAt = tmpCreatedAt == -1 ? null : new Date(tmpCreatedAt);
+    long tmpUpdatedAt = in.readLong();
+    this.updatedAt = tmpUpdatedAt == -1 ? null : new Date(tmpUpdatedAt);
+  }
+
+  public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+    @Override
+    public User createFromParcel(Parcel source) {
+      return new User(source);
+    }
+
+    @Override
+    public User[] newArray(int size) {
+      return new User[size];
+    }
+  };
 }

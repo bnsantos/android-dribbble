@@ -54,15 +54,15 @@ public class ShotsRepositoryTest {
     List<Shots> data = Util.loadFromResource(getClass().getClassLoader(), mGson, "shots.json", new TypeToken<List<Shots>>() {
     }.getType());
     
-    Mockito.when(mDao.read()).thenReturn(Observable.<List<Shots>>empty());
+    Mockito.when(mDao.read(anyInt())).thenReturn(Observable.<List<Shots>>empty());
     Mockito.when(mService.read(anyInt(), anyInt(), anyString(), anyString())).thenReturn(Observable.just(data));
     Mockito.when(mDao.cache(data)).thenReturn(Observable.just(data));
 
     RecordingObserver<List<Shots>> subscriber = mSubscriberRule.create();
 
-    mRepo.read().subscribe(subscriber);
+    mRepo.read(10).subscribe(subscriber);
 
-    Mockito.verify(mDao).read();
+    Mockito.verify(mDao).read(anyInt());
     Mockito.verify(mService).read(anyInt(), anyInt(), anyString(), anyString());
     Mockito.verify(mDao).cache(data);
     Mockito.verifyNoMoreInteractions(mDao);
@@ -78,16 +78,16 @@ public class ShotsRepositoryTest {
     List<Shots> api = Util.loadFromResource(getClass().getClassLoader(), mGson, "shots2.json", new TypeToken<List<Shots>>() {
     }.getType());
 
-    Mockito.when(mDao.read()).thenReturn(Observable.just(cache));
+    Mockito.when(mDao.read(anyInt())).thenReturn(Observable.just(cache));
     Mockito.when(mService.read(anyInt(), anyInt(), anyString(), anyString())).thenReturn(Observable.just(api));
     Mockito.when(mDao.cache(api)).thenReturn(Observable.just(api));
 
     RecordingObserver<List<Shots>> subscriber = mSubscriberRule.create();
 
-    mRepo.read().subscribe(subscriber);
+    mRepo.read(10).subscribe(subscriber);
 
     subscriber.assertValue(cache);
-    Mockito.verify(mDao).read();
+    Mockito.verify(mDao).read(anyInt());
     Mockito.verify(mService).read(anyInt(), anyInt(), anyString(), anyString());
     Mockito.verify(mDao).cache(api);
     Mockito.verifyNoMoreInteractions(mDao);

@@ -18,6 +18,6 @@ import io.reactivex.Observable;
   }
 
   public Observable<List<Shots>> read(){
-    return mRepo.read();
+    return mRepo.read(10);
   }
 }

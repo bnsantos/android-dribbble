@@ -25,6 +25,8 @@ import java.util.List;
 
 import io.reactivex.Observable;
 
+import static org.mockito.ArgumentMatchers.anyInt;
+
 @RunWith(JUnit4.class)
 public class ShotsViewModelTest {
   @Rule
@@ -52,12 +54,12 @@ public class ShotsViewModelTest {
 
     List<Shots> server = Util.loadFromResource(getClass().getClassLoader(), mGson, "shots2.json", new TypeToken<List<Shots>>() {
     }.getType());
-    Mockito.when(mRepository.read()).thenReturn(Observable.just(cache, server));
+    Mockito.when(mRepository.read(anyInt())).thenReturn(Observable.just(cache, server));
 
     RecordingObserver<List<Shots>> subscriber = mSubscriberRule.create();
     mViewModel.read().subscribe(subscriber);
 
-    Mockito.verify(mRepository).read();
+    Mockito.verify(mRepository).read(10);
     subscriber.assertValue(cache);
     subscriber.assertValue(server);
     subscriber.assertComplete();

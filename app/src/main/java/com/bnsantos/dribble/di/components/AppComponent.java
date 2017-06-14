@@ -5,6 +5,7 @@ import android.app.Application;
 import com.bnsantos.dribble.App;
 import com.bnsantos.dribble.di.modules.AppModule;
 import com.bnsantos.dribble.di.modules.MainActivityModule;
+import com.bnsantos.dribble.di.modules.ShotActivityModule;
 
 import javax.inject.Singleton;
 
@@ -17,8 +18,8 @@ import dagger.android.support.AndroidSupportInjectionModule;
     AndroidInjectionModule.class,
     AndroidSupportInjectionModule.class,
     AppModule.class,
-    MainActivityModule.class
-//    MainActivityModule.class
+    MainActivityModule.class,
+    ShotActivityModule.class
 })
 public interface AppComponent {
   @dagger.Component.Builder
