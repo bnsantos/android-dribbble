@@ -4,6 +4,7 @@ import com.bnsantos.dribble.BuildConfig;
 import com.bnsantos.dribble.api.DribbleService;
 import com.bnsantos.dribble.db.ShotsDao;
 import com.bnsantos.dribble.models.Shots;
+import com.bnsantos.dribble.vo.Resource;
 
 import java.util.List;
 
@@ -24,24 +25,31 @@ import io.reactivex.functions.Function;
     mDao = dao;
   }
 
-  public Observable<List<Shots>> read(final int max){
+  public Observable<Resource<List<Shots>>> read(final int max){
     return Observable.mergeDelayError(
-        readCached(max),
-        readServer()
+        readCached(0, max),
+        readServer(0, max, "views")
     );
   }
 
-  private Observable<List<Shots>> readCached(final int max){
-    return mDao.read(max);
+  private Observable<Resource<List<Shots>>> readCached(final int offset, final int max){
+    return mDao.read(offset, max);
   }
 
-  private Observable<List<Shots>> readServer(){
-    return mService.read(1, 10, "views", BuildConfig.DRIBBBLE_TOKEN)
-        .flatMap(new Function<List<Shots>, Observable<List<Shots>>>() {
+  private Observable<Resource<List<Shots>>> readServer(final int page, final int max, @android.support.annotation.NonNull final String sort){
+    return mService.read(page+1, max, sort, BuildConfig.DRIBBBLE_TOKEN)
+        .flatMap(new Function<List<Shots>, Observable<Resource<List<Shots>>>>() {
           @Override
-          public Observable<List<Shots>> apply(@NonNull List<Shots> shotsList) throws Exception {
+          public Observable<Resource<List<Shots>>> apply(@NonNull List<Shots> shotsList) throws Exception {
             return mDao.cache(shotsList);
           }
         });
+  }
+
+  public Observable<Resource<List<Shots>>> readPage(final int page, final int max){
+    return Observable.mergeDelayError(
+        readCached(page*max, max),
+        readServer(page, max, "views")
+    );
   }
 }

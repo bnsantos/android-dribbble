@@ -2,6 +2,7 @@ package com.bnsantos.dribble.ui;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +18,11 @@ import java.util.List;
 import java.util.Locale;
 
 public class ShotsAdapter extends RecyclerView.Adapter<ShotsAdapter.ShotsHolder> {
-  private final List<Shots> mItems;
+  private static final String TAG = ShotsAdapter.class.getSimpleName();
+  private List<Shots> mItems;
   private final int mWidth;
   private final int mHeight;
+  private int mLastAppendSize;
 
   public ShotsAdapter(int w, int h) {
     mItems = new ArrayList<>();
@@ -43,9 +46,34 @@ public class ShotsAdapter extends RecyclerView.Adapter<ShotsAdapter.ShotsHolder>
     return mItems.size();
   }
 
-  public void swap(List<Shots> items){
-    mItems.clear();
-    mItems.addAll(items);
+  public void setItems(@NonNull List<Shots> items){
+    mItems = items;
+    notifyDataSetChanged();
+  }
+
+
+  public void swap(final int page, @NonNull List<Shots> items){
+    int size = items.size();
+    if(mItems.size() > 0) {
+      //Remove previous cached items
+      int offset = size * (page + 1);
+      for (int i = 1; i <= mLastAppendSize; i++) {
+        mItems.remove(offset-i);
+      }
+      for (int i = 0; i < size; i++) {
+        mItems.add(offset - size + i, items.get(i));
+      }
+    }else {
+      mItems.addAll(items);
+    }
+    notifyDataSetChanged();
+  }
+
+
+  public void append(@NonNull final List<Shots> data) {
+    mLastAppendSize = data.size();
+    mItems.addAll(data);
+    notifyDataSetChanged();
   }
 
   public Shots getItem(int position) {

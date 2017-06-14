@@ -8,10 +8,15 @@ import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.bnsantos.dribble.R;
 import com.bnsantos.dribble.models.Shots;
+import com.bnsantos.dribble.ui.recyclerview.EndlessRecyclerViewScrollListener;
+import com.bnsantos.dribble.ui.recyclerview.RecyclerItemClickListener;
 import com.bnsantos.dribble.viewmodel.ShotsViewModel;
+import com.bnsantos.dribble.vo.Resource;
+import com.bnsantos.dribble.vo.Status;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
@@ -32,6 +37,7 @@ public class MainActivity extends RxAppCompatActivity {
   @Inject ShotsViewModel mViewModel;
   protected SwipeRefreshLayout mRefreshLayout;
   protected ShotsAdapter mAdapter;
+  protected EndlessRecyclerViewScrollListener mEndlessRecyclerViewScrollListener;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +50,10 @@ public class MainActivity extends RxAppCompatActivity {
     DisplayMetrics displayMetrics = new DisplayMetrics();
     getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
     int windowWidth = displayMetrics.widthPixels;
+
     mAdapter = new ShotsAdapter((int) (windowWidth * 0.7), (int) (getResources().getDimensionPixelOffset(R.dimen.cover_height) * 0.7));
-    recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+    recyclerView.setLayoutManager(layoutManager);
     recyclerView.setAdapter(mAdapter);
     recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
       @Override
@@ -57,10 +65,21 @@ public class MainActivity extends RxAppCompatActivity {
       }
     }));
 
+    mEndlessRecyclerViewScrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
+      @Override
+      public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+        Log.i(TAG, "LoadMore: " + page);
+        mRefreshLayout.setRefreshing(true);
+        loadMore(page);
+      }
+    };
+    recyclerView.addOnScrollListener(mEndlessRecyclerViewScrollListener);
+
     mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
       @Override
       public void onRefresh() {
         read();
+        mEndlessRecyclerViewScrollListener.resetState();
       }
     });
 
@@ -71,13 +90,14 @@ public class MainActivity extends RxAppCompatActivity {
     mViewModel.read()
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .compose(this.<List<Shots>>bindUntilEvent(ActivityEvent.DESTROY))
-        .subscribe(new Consumer<List<Shots>>() {
+        .compose(this.<Resource<List<Shots>>>bindUntilEvent(ActivityEvent.DESTROY))
+        .subscribe(new Consumer<Resource<List<Shots>>>() {
           @Override
-          public void accept(@NonNull List<Shots> shotsList) throws Exception {
+          public void accept(@NonNull Resource<List<Shots>> resource) throws Exception {
             mRefreshLayout.setRefreshing(false);
-            mAdapter.swap(shotsList);
-            mAdapter.notifyDataSetChanged();
+            if (resource.data != null) {
+              mAdapter.setItems(resource.data);
+            }
           }
         }, new Consumer<Throwable>() {
           @Override
@@ -85,6 +105,39 @@ public class MainActivity extends RxAppCompatActivity {
             mRefreshLayout.setRefreshing(false);
             Log.e(TAG, "Error", throwable);
 
+          }
+        }, new Action() {
+          @Override
+          public void run() throws Exception {
+            Log.i(TAG, "oncompleted");
+          }
+        });
+  }
+
+  protected void loadMore(final int page){
+    mViewModel.loadMore(page)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .compose(this.<Resource<List<Shots>>>bindUntilEvent(ActivityEvent.DESTROY))
+        .subscribe(new Consumer<Resource<List<Shots>>>() {
+          @Override
+          public void accept(@NonNull Resource<List<Shots>> resource) throws Exception {
+            if (resource.data != null) {
+              if (resource.data.size() > 0) {
+                mRefreshLayout.setRefreshing(false);
+              }
+              if (resource.status == Status.LOADING) {
+                mAdapter.append(resource.data);
+              }else {
+                mAdapter.swap(page, resource.data);
+              }
+            }
+          }
+        }, new Consumer<Throwable>() {
+          @Override
+          public void accept(@NonNull Throwable throwable) throws Exception {
+            mRefreshLayout.setRefreshing(false);
+            Log.e(TAG, "Error", throwable);
           }
         }, new Action() {
           @Override

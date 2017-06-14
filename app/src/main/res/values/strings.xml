@@ -2,4 +2,8 @@
   <string name="app_name">Dribble</string>
   <string name="followers_d">Followers %d</string>
   <string name="likes_d">Likes %d</string>
+  <string name="no_location">Does not have location</string>
+  <string name="no_web">Does not have site</string>
+  <string name="no_twitter">Does not have twitter</string>
+  <string name="bio" translatable="false">Bio</string>
 </resources>

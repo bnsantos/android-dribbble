@@ -53,7 +53,7 @@ public class ShotActivity extends AppCompatActivity {
     mWeb = (TextView) findViewById(R.id.web);
     mTwitter = (TextView) findViewById(R.id.twitter);
     mFollowers = (TextView) findViewById(R.id.followers);
-    mLikes = (TextView) findViewById(R.id.likes);
+    mLikes = (TextView) findViewById(R.id.likesCount);
 
     updateViews(mShots);
   }
@@ -78,14 +78,20 @@ public class ShotActivity extends AppCompatActivity {
 
     if (creator.getLocation() != null) {
       mLocation.setText(creator.getLocation());
+    }else {
+      mLocation.setText(R.string.no_location);
     }
 
     if (creator.getWeb() != null) {
       mWeb.setText(creator.getWeb());
+    }else {
+      mWeb.setText(R.string.no_web);
     }
 
     if (creator.getTwitter() != null) {
       mTwitter.setText(creator.getTwitter());
+    }else {
+      mTwitter.setText(R.string.no_twitter);
     }
 
     mLikes.setText(getString(R.string.likes_d, creator.getLikes()));

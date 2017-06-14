@@ -4,6 +4,8 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.drawable.ProgressBarDrawable;
+import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
@@ -16,6 +18,13 @@ public class FrescoUtils {
     ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
         .setResizeOptions(new ResizeOptions(w, h))
         .build();
+
+    GenericDraweeHierarchy hierarchy = view.getHierarchy();
+    ProgressBarDrawable progressBarImage = new ProgressBarDrawable();
+    progressBarImage.setIsVertical(true);
+
+    hierarchy.setProgressBarImage(progressBarImage);
+    view.setHierarchy(hierarchy);
 
     DraweeController controller = Fresco.newDraweeControllerBuilder()
         .setImageRequest(request)

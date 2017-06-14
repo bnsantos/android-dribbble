@@ -71,8 +71,7 @@ public class DribbleServiceTest {
     RecordingObserver<List<Shots>> subscriber = mSubscriberRule.create();
 
     mService.read(1, 10, "views", "token").subscribe(subscriber);
-    List<Shots> data = (List<Shots>) Util.loadFromResource(getClass().getClassLoader(), mGson, "shots.json", new TypeToken<List<Shots>>() {
-    }.getType());
+    List<Shots> data = Util.loadFromResource(getClass().getClassLoader(), mGson, "shots.json", new TypeToken<List<Shots>>() { }.getType());
 
     List<Shots> response = subscriber.takeValue();
 

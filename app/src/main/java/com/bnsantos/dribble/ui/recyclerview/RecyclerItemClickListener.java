@@ -1,4 +1,4 @@
-package com.bnsantos.dribble.ui;
+package com.bnsantos.dribble.ui.recyclerview;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

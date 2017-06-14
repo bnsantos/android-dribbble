@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Dribble</string>
+  <string name="followers_d">Seguidores %d</string>
+  <string name="likes_d">Curtidas %d</string>
+  <string name="no_location">Não possui endereço</string>
+  <string name="no_twitter">Não possui twitter</string>
+  <string name="no_web">Não possui website</string>
+</resources>
