@@ -1,5 +1,10 @@
 # android-dribbble
 Simple Android dribbble shots
+Simple android app that shows the Dribbble popular shots ordered by views.
+
+* Improvements:<br>
+__1__ Dinamy change the Dribbble filter by date range (daily, weekly, ....) and change the sort by views/likes<br>
+__2__ Improve UI and add more data in ShotActivity
 
 * Libs Used<br>
 [Dagger2](https://github.com/google/dagger)<br>
