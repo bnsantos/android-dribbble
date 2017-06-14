@@ -9,3 +9,8 @@ Simple Android dribbble shots
 [rxLifecycle](https://github.com/trello/RxLifecycle)<br>
 [DBFlow](https://github.com/Raizlabs/DBFlow)<br>
 [frescoLib](http://frescolib.org/)<br>
+* Libs used for testing<br>
+[jUnit](http://junit.org/junit4/)<br>
+[mockito](https://github.com/mockito/mockito)<br>
+[assertj-android](https://github.com/square/assertj-android)<br>
+[espresso](https://google.github.io/android-testing-support-library/)
