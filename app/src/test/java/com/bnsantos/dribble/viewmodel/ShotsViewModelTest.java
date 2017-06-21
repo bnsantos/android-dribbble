@@ -25,7 +25,13 @@ import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.exceptions.CompositeException;
+import okhttp3.MediaType;
+import okhttp3.ResponseBody;
+import retrofit2.HttpException;
+import retrofit2.Response;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 
 @RunWith(JUnit4.class)
@@ -95,5 +101,41 @@ public class ShotsViewModelTest {
     subscriberPage.assertValue(p2Success);
     subscriberPage.assertComplete();
 
+  }
+
+  @Test
+  public void testErrorAuthentication(){
+    ResponseBody body = ResponseBody.create(MediaType.parse("text/plain"), "{\n\"message\": \"Bad credentials.\"\n}");
+    HttpException exception = new HttpException(Response.error(401, body));
+    Mockito.when(mRepository.read(anyInt())).thenReturn(Observable.<Resource<List<Shots>>>error(exception));
+
+    RecordingObserver<Resource<List<Shots>>> subscriber = mSubscriberRule.create();
+    mViewModel.read().subscribe(subscriber);
+
+    subscriber.assertValue(Resource.<List<Shots>>error("Authentication Error", null)).assertComplete();
+  }
+
+  @Test
+  public void testErrorBadRequest(){
+    ResponseBody body = ResponseBody.create(MediaType.parse("text/plain"), "{\n\"message\": \"Not found.\"\n}");
+    HttpException exception = new HttpException(Response.error(404, body));
+    Mockito.when(mRepository.read(anyInt())).thenReturn(Observable.<Resource<List<Shots>>>error(exception));
+
+    RecordingObserver<Resource<List<Shots>>> subscriber = mSubscriberRule.create();
+    mViewModel.read().subscribe(subscriber);
+
+    subscriber.assertValue(Resource.<List<Shots>>error("Bad Request", null)).assertComplete();
+  }
+
+  @Test
+  public void testErrorInternalServer(){
+    ResponseBody body = ResponseBody.create(MediaType.parse("text/plain"), "{\n\"message\": \"Internal server error.\"\n}");
+    HttpException exception = new HttpException(Response.error(500, body));
+    Mockito.when(mRepository.read(anyInt())).thenReturn(Observable.<Resource<List<Shots>>>error(exception));
+
+    RecordingObserver<Resource<List<Shots>>> subscriber = mSubscriberRule.create();
+    mViewModel.read().subscribe(subscriber);
+
+    subscriber.assertValue(Resource.<List<Shots>>error("Unknown", null)).assertComplete();
   }
 }
